@@ -1,0 +1,22 @@
+{
+  "name": "overthink-marketplace",
+  "owner": {
+    "name": "dudgh",
+    "email": "dudgh6418@naver.com"
+  },
+  "metadata": {
+    "description": "Single-plugin marketplace for Overthink — directed sequential diversity ideation for Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "overthink",
+      "source": "./plugins/overthink",
+      "description": "Directed sequential diversity ideation — N problem-specific axes, one idea per axis forced away from all prior ideas, each tagged trap/gem/solid.",
+      "version": "1.0.0",
+      "author": {
+        "name": "dudgh",
+        "email": "dudgh6418@naver.com"
+      }
+    }
+  ]
+}

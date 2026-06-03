@@ -1,0 +1,14 @@
+{
+  "name": "overthink",
+  "version": "1.0.0",
+  "description": "Directed sequential diversity ideation. Derives N problem-specific axes, then generates one idea per axis sequentially — each forced away from all prior ideas — and tags every idea trap/gem/solid so you can pick one from a genuinely varied spread.",
+  "author": {
+    "name": "dudgh",
+    "email": "dudgh6418@naver.com",
+    "url": "https://github.com/90cube"
+  },
+  "homepage": "https://github.com/90cube/overthink-plugin",
+  "repository": "https://github.com/90cube/overthink-plugin",
+  "license": "MIT",
+  "keywords": ["ideation", "brainstorming", "diversity", "creativity", "decision-making"]
+}
