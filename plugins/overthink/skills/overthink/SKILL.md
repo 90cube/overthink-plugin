@@ -1,6 +1,6 @@
 ---
 name: overthink
-description: Directed sequential diversity ideation. Derives N problem-specific axes, gets consent, then generates one idea per axis sequentially — each avoiding all prior ideas — and tags each trap/gem/solid. Use on /overthink, "overthink this", or open-ended "give me a few distinct ways to…" where the goal is to pick one idea from a varied spread. Skip for factual lookups, syntax, known-root-cause bugs, or closed phrasing ("quick", "standard", "just").
+description: Directed sequential diversity ideation. Derives N problem-specific axes, gets consent, then generates one idea per axis sequentially — each avoiding all prior ideas — and tags each trap/gem/solid. Use on /overthink, "overthink this", or open-ended "give me a few distinct ways to…" where the goal is to pick one idea from a varied spread. For "/overthink --deep", "deep overthink", "끝까지 과생각", or any request to take ONE fixed goal and autonomously work out every concrete decision needed to realize it (concept → stack → architecture → design → …), run the recursive autonomous concretization cascade in the Deep mode section instead of the single-pass flow. Skip for factual lookups, syntax, known-root-cause bugs, or closed phrasing ("quick", "standard", "just").
 license: MIT
 ---
 
@@ -177,6 +177,129 @@ trade-off.
 - If trimming would make an idea harder to act on, keep it. In the final output,
   **quality > token count.** Slightly longer is fine when it buys clarity.
 
+## Deep mode (`--deep`) — recursive autonomous concretization
+
+Trigger this mode on `/overthink --deep <goal>`, "deep overthink", "끝까지 과생각", or any
+request to take ONE fixed goal and autonomously work out *every* concrete decision needed to
+realize it. Add `--interactive` (`/overthink --deep --interactive <goal>`) to keep the loop
+but hand the per-layer pick back to the user instead of auto-selecting.
+
+**Terms used below:** *goal* = the user's one fixed purpose, set once at invocation and never
+changed (it plays the role that `Problem:` plays in the single-pass flow, but for the whole
+run). *Layer* = one step of the cascade (concept, then stack, then …), each answering its own
+derived question. *Axis* = a within-layer dimension of the single-pass flow (unchanged
+meaning). Don't conflate a cascade *layer* with an idea's internal *stage*.
+
+**Consent is given once, up front.** Invoking `--deep` IS the consent — so the per-layer runs
+do NOT re-show the Pre-flight warning or run Phase 0's "proceed?" gate (that would stall the
+cascade at every layer and kill the autonomy). Show the cost/depth-cap line once before the
+first layer (see Cost), then run uninterrupted to a stop condition.
+
+Plain overthink fans out once over a single decision and hands you a spread to pick from.
+`--deep` does not stop there: it treats the spread-pick as settled, derives the *next*
+decision that realizing the goal now demands, fans out again, and descends —
+concept → stack → architecture → interface → … — until nothing meaningful is left to decide.
+This is overthink living up to its name: it doesn't stop at one good answer, it thinks the
+whole thing through to the bottom, by itself.
+
+### The cascade
+
+The fixed **goal** (the user's original purpose) is the north star for the entire run —
+every choice is judged by "does this best serve that goal, given what's already decided." The
+goal never changes; everything below it does.
+
+Each layer of the cascade:
+
+1. **Run the normal single-pass flow** (Phase 0–2) on the *current* concretization question —
+   derive axes, generate N ideas sequentially with the EXCLUDE list, classify. Nothing about
+   that flow changes; deep mode just invokes it repeatedly on a moving question.
+2. **Auto-select — no human gate (this is the default).** Deep mode makes the pick itself:
+   take the ★ gem, or *fuse* the 2–3 ideas that together best serve the goal into one coherent
+   decision. The goal is the objective function. With `--interactive`, pause here and let the
+   user pick or fuse instead, then continue automatically — the loop machinery is identical;
+   only who holds the selector changes.
+3. **Record** the decision (with its fit-to-goal reason) and the *unchosen* branches to the
+   state file (below).
+4. **Derive the next layer emergently.** Given the goal + the decision path so far, what is the
+   single most important still-undecided question? Let it grow out of the last decision
+   ("stack = React" → next is "structure that fits React"), biased toward — but never locked
+   to — the natural build pipeline (concept → tech → structure → data → interface → polish →
+   ship). A game, a CLI, and an essay will grow different chains; that divergence is the point.
+
+### Self-correction — climb-back
+
+A one-way greedy descent compounds error: a wrong pick at an upper layer silently poisons
+everything beneath it, and with no human gate nothing catches it. So the descent is **not**
+strictly one-way.
+
+When a deeper layer surfaces a genuine *contradiction* with an upstream decision (e.g. "this
+interaction is impossible on the stack we chose"), climb back to that upstream layer,
+re-select with the new information, and re-descend from there. This is the Ralph principle —
+failures are data, and the persisted state lets each pass read and revise its own prior work.
+It is what makes "no human needed" produce something sound instead of a tall stack of
+compounding mistakes.
+
+Mechanics of a climb-back, so the loop stays well-defined:
+
+- **Supersede, don't erase.** Append a new revised entry for the climbed-back layer that
+  *supersedes* the stale one (mark the old one superseded); the append-only state file keeps
+  both so the history stays auditable.
+- **Re-descend regenerates below.** Every layer below the climb-back point was derived from the
+  now-changed decision, so discard those decisions and regenerate them fresh from the revised
+  layer down. Layers above are untouched.
+- **Guard against thrash.** Climb back only on a real contradiction, never on mild preference.
+  Cap it: if the *same* upstream layer is climbed back to more than twice, stop instead and
+  report the unresolved tension — repeatedly returning to one layer means the goal itself is
+  over-constrained, and that is a finding, not a failure to fix in-loop.
+
+### When to stop — fixed-point + convergence
+
+Halt as soon as ANY of these fires:
+
+- **Fixed point (primary) — checked at the derivation step (step 4).** After recording a
+  decision, try to derive the next still-undecided question. If twice in a row that derivation
+  can only surface a question that adds **no new material constraint** on realizing the goal —
+  i.e. the honest answer to "what's left to decide?" is "nothing that changes the build, only
+  cosmetic refinement" — you are at a fixed point. Stop. (This is about the *next question
+  failing to appear*, distinct from Diversity collapse below, which is about the *answers
+  within a layer* failing to differ.)
+- **Diversity collapse — checked at the generation step.** Inside a layer, the N generated
+  ideas are no longer meaningfully distinct: the spread overthink depends on has died, so
+  there is nothing left to explore at this granularity. Stop.
+- **Max depth (backstop).** A hard cap (default 8 layers) so an over-eager cascade can't run
+  forever. This is a safety net; the two convergence checks above should normally fire first.
+
+### State file — the cascade lives on disk
+
+Persist the run to `docs/overthink/<goal-slug>.md`, relative to the project root (the repo root
+if in one, otherwise the current working directory); create the directory if absent. The file
+IS the state: the run becomes resumable and auditable, and a climb-back can re-read what was
+decided before. Append as you go — never rewrite history (climb-backs supersede, per above).
+
+Record per layer: the layer's question, the N generated ideas with their tags, the decision
+(pick or fusion) plus its fit-to-goal reason, and the **unchosen branches kept verbatim** —
+they are the only record of what the autonomous selector passed over, so the user can later
+override a call or re-run a branch.
+
+### Output
+
+When the cascade halts, present in the user's language:
+
+1. **The decision spine**, top to bottom — goal → each layer's question → the decision + why.
+   This is the headline result.
+2. **Notable unchosen branches** per layer, as a secondary/collapsed list — what it considered
+   and set aside.
+3. A pointer to the state file, and **which stop condition fired** (fixed point / diversity
+   collapse / depth cap).
+
+### Cost
+
+A deep run is many times more expensive than plain overthink — each layer is itself a full
+N+2-pass overthink, multiplied by cascade depth, plus any climb-backs. That cost is the whole
+point of `--deep`; do not silently downgrade to a single shallow pass to save calls. But
+because it is expensive, state the depth cap up front, and do not start a deep run for a
+request that a single overthink — or a direct answer — would already serve.
+
 ## Anti-patterns
 
 - **Single-turn collapse (the main one).** Writing all N ideas in one reply instead of N
@@ -186,10 +309,9 @@ trade-off.
   EXCLUDE list each time.
 - Generating in parallel without the exclude list → ideas overlap; the spread collapses.
 - Axes that differ only in wording → derive axes by *dimension*, not synonym.
-- Turning this into ADHD's full scoring/clustering/deepening → out of scope; this is the
-  light version. Pick one idea and move.
-
-## Companion code
-
-A TypeScript library + CLI does the same loop with structured JSON and state files
-(`overthink plan` → `overthink run`). Use it for batch/scripted runs outside Claude.
+- Turning the single-pass flow into full scoring/clustering/deepening → out of scope for plain
+  overthink; if the user wants the goal driven all the way down, that is what `--deep` is for.
+- In `--deep`, climbing back on mild preference instead of real contradiction → the cascade
+  never settles. Climb back only when a downstream layer makes an upstream decision untenable.
+- In `--deep`, silently collapsing the per-layer cascade into one shallow pass to save calls →
+  defeats the whole mode. The depth is the point; declare the cap up front instead.

@@ -33,6 +33,32 @@ Or just say "overthink this" / "give me a few distinct ways to…".
 ("quick", "standard", "just") — it costs ≈ N+2 model calls, so it earns its keep only when you
 actually want a varied spread to choose from.
 
+## Deep mode — `--deep`
+
+```
+/overthink --deep <one fixed goal>
+```
+
+Where plain Overthink fans out once over a single decision, `--deep` keeps going: it treats
+the pick as settled, derives the *next* decision realizing the goal demands, fans out again,
+and descends — concept → stack → architecture → interface → … — until nothing meaningful is
+left to decide. Overthink living up to its name: it doesn't stop at one good answer, it thinks
+the whole thing through to the bottom, by itself.
+
+- **Autonomous by default** — no per-layer selection; the fixed goal is the objective function
+  and the loop auto-picks (or fuses) the direction that best serves it. Add `--interactive` to
+  hold the per-layer pick yourself.
+- **Self-correcting** — when a deeper layer contradicts an upstream choice, it climbs back,
+  re-decides, and re-descends (bounded, so it can't thrash).
+- **Knows when to stop** — halts on a fixed point (the next layer adds no new constraint),
+  diversity collapse, or a depth cap.
+- **Auditable** — the whole decision tree, including the branches it *didn't* take, is written
+  to `docs/overthink/<goal-slug>.md` so you can override a call or re-run a branch.
+
+It is many times more expensive than a single Overthink run (each layer is itself a full
+Overthink) — that depth is the point. Use it when you want one goal driven all the way to a
+concrete, fully-decided plan.
+
 ## Installation
 
 ```bash

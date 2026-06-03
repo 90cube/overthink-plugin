@@ -11,8 +11,8 @@
     {
       "name": "overthink",
       "source": "./plugins/overthink",
-      "description": "Directed sequential diversity ideation — N problem-specific axes, one idea per axis forced away from all prior ideas, each tagged trap/gem/solid.",
-      "version": "1.0.0",
+      "description": "Directed sequential diversity ideation — N problem-specific axes, one idea per axis forced away from all prior ideas, each tagged trap/gem/solid. Plus a --deep recursive autonomous mode that drives one goal down every concretization layer until convergence.",
+      "version": "1.1.0",
       "author": {
         "name": "dudgh",
         "email": "dudgh6418@naver.com"
