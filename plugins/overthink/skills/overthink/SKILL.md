@@ -1,6 +1,6 @@
 ---
 name: overthink
-description: Directed sequential diversity ideation. Derives N problem-specific axes, gets consent, then generates one idea per axis sequentially — each avoiding all prior ideas — and tags each trap/gem/solid. Use on /overthink, "overthink this", or open-ended "give me a few distinct ways to…" where the goal is to pick one idea from a varied spread. For "/overthink --deep", "deep overthink", "끝까지 과생각", or any request to take ONE fixed goal and autonomously work out every concrete decision needed to realize it (concept → stack → architecture → design → …), run the recursive autonomous concretization cascade in the Deep mode section instead of the single-pass flow. Skip for factual lookups, syntax, known-root-cause bugs, or closed phrasing ("quick", "standard", "just").
+description: Directed sequential diversity ideation. Derives N problem-specific axes, gets consent, then generates one idea per axis sequentially — each avoiding all prior ideas — and tags each trap/gem/solid. Use on /overthink, "overthink this", or open-ended "give me a few distinct ways to…" where the goal is to pick one idea from a varied spread. For "/overthink --deep", "deep overthink", "끝까지 과생각", or any request to take ONE fixed goal and autonomously work out every concrete decision needed to realize it (concept → stack → architecture → design → …), run the recursive autonomous concretization cascade in the Deep mode section instead of the single-pass flow. For "/overthink --full" or any request to drive a goal all the way to its finished deliverable — in whatever form that deliverable naturally takes (a story, lyrics, a typographic piece, a system design, a program spec, …) — run the Full mode section: one upfront domain-derived framing round, then the deep cascade, then synthesis of the goal-appropriate artifact. Skip for factual lookups, syntax, known-root-cause bugs, or closed phrasing ("quick", "standard", "just").
 license: MIT
 ---
 
@@ -299,6 +299,84 @@ N+2-pass overthink, multiplied by cascade depth, plus any climb-backs. That cost
 point of `--deep`; do not silently downgrade to a single shallow pass to save calls. But
 because it is expensive, state the depth cap up front, and do not start a deep run for a
 request that a single overthink — or a direct answer — would already serve.
+
+## Full mode (`--full`) — framed cascade to a finished deliverable
+
+Trigger on `/overthink --full <goal>`, "full overthink", or any request to take a goal not
+just to a set of *decisions* but all the way to the **finished deliverable** — in whatever
+form that deliverable naturally takes.
+
+`--full` is `--deep` with two domain-derived bookends, and it hardcodes **nothing** about the
+domain. A story, a song lyric, an ad's typography, a game's content, a system design, a program
+— each grows its own framing questions and its own terminal artifact. There is no built-in
+assumption that the output is software, a "spec", or any fixed shape; a build spec is just the
+artifact that happens to be right *when the goal is to build a program*, no more privileged
+than "the finished lyrics" when the goal is a song.
+
+### [1] Framing gate — the one human touchpoint, derived from the goal
+
+`--deep` deliberately asks nothing (invoking it is the consent). `--full` adds exactly one
+upfront round, because a loosely-phrased goal leaves load-bearing constraints open that the
+autonomous cascade would otherwise have to guess — and a wrong guess high up poisons every
+layer below it (recall the climb-back cost). This round **elicits constraints; it is not a
+consent gate.** The Pre-flight / Phase-0 "proceed?" prompt stays suppressed exactly as in
+`--deep` — once these constraints are answered, the run is autonomous to the end.
+
+Read the goal and surface the **3–5 under-specified constraints that (a) the cascade cannot
+safely guess and (b) would force a high-impact arbitrary pick if left open.** These are derived
+from the goal's own domain — never a fixed checklist:
+
+- program → "serverless or self-hosted? target platform? scale / budget?"
+- song lyric → "genre? language? mood / tempo? verse–chorus or through-composed?"
+- ad typography → "medium / format? the actual copy? tone? one headline or a full layout?"
+- story → "length? genre? POV? tone?"
+
+Present each with a **recommended default** (inferred from the goal and any user context) so
+the user can answer, override, or just say "use your defaults" — keeping the autonomous spirit
+available. The answers are then fixed into the goal; from there the run is uninterrupted, like
+`--deep`.
+
+**Settle the deliverable form here too.** Deciding what the finished artifact actually *is* is
+part of framing — and its form sets how deep the cascade must descend: a "concept direction"
+stops high, a "completed story" must reach scene/prose, a "buildable spec" must reach
+schema/contract level. If the form is obvious from the goal, state your assumption ("I'll
+produce the finished lyrics — right?"); if genuinely ambiguous (game content = a design doc, or
+the actual quests and dialogue?), make it one of the framing questions.
+
+### [2] Cascade — unchanged `--deep`
+
+Run the Deep-mode cascade exactly as defined above, with the framed goal as the now
+fully-specified north star. The deliverable form from [1] sets the **concreteness floor** —
+the granularity at which the artifact can be authored without any further decisions (for a
+story that is scene/prose level; for a build spec, schema/contract level; for a concept memo,
+high-level direction). Keep descending until that floor is reached, then halt on the usual
+conditions (fixed point / diversity collapse / depth cap) — now judged relative to "is there
+enough decided to produce the target artifact yet?", not against an abstract criterion alone.
+
+### [3] Derive the terminal artifact form
+
+At the stop point, **confirm or refine the deliverable form provisionally set in [1]**, now
+that the decisions exist — naming the natural finished form for THIS goal + these decisions,
+never a fixed template. Story → the story (or treatment/outline, if that was the chosen form); lyrics → the
+lyrics; typography → the type composition + spec; program → the build spec (with FE/BE/API only
+to the extent that goal needs them); game content → the content design, or the actual content.
+This is the same emergent derivation the cascade uses for its next layer, applied once more to
+"what is the finished thing."
+
+### [4] Synthesize the artifact — assembly, not re-divergence
+
+Expand the locked decision spine into that artifact's native shape. This is synthesis, not
+ideation: the decisions are settled, so do **not** re-open them or fan out again — pour them
+into the deliverable's conventional form (a story's prose, a lyric's verse/chorus, a spec's
+sections). Write the finished artifact to `docs/overthink/<goal-slug>-<form>.md`, beside the
+cascade state file, and present it in the user's language.
+
+### Cost
+
+The heaviest mode: a full `--deep` cascade, plus the framing pass, plus the synthesis. State
+the depth cap and the expected cost up front, more bluntly than for `--deep`. Do not start
+`--full` for a goal that a single `--deep`, a single overthink, or a direct answer already
+serves.
 
 ## Anti-patterns
 
