@@ -347,11 +347,16 @@ the actual quests and dialogue?), make it one of the framing questions.
 
 Run the Deep-mode cascade exactly as defined above, with the framed goal as the now
 fully-specified north star. The deliverable form from [1] sets the **concreteness floor** —
-the granularity at which the artifact can be authored without any further decisions (for a
-story that is scene/prose level; for a build spec, schema/contract level; for a concept memo,
-high-level direction). Keep descending until that floor is reached, then halt on the usual
-conditions (fixed point / diversity collapse / depth cap) — now judged relative to "is there
-enough decided to produce the target artifact yet?", not against an abstract criterion alone.
+the granularity at which the artifact can be authored without any further decisions. Make this
+operational, not vague: the floor is reached only when **no named component is left
+unspecified** — no `...` / `TBD` placeholder, no "computed somehow", no interface whose types
+are given but whose content, algorithm, or vocabulary is not. *Naming a piece is not deciding
+it*: a named-but-unspecified component is itself an unresolved layer, so descend into it rather
+than counting it done. (A build spec's floor is not "schemas and contracts exist" — it is "a
+builder could implement each part without making a further design decision." A story's floor is
+scene/prose, not a beat outline.) Halt only then, on the usual conditions (fixed point /
+diversity collapse / depth cap) — and beware the failure mode where the cascade mistakes
+"architecture decided" for "implementation specified" and stops one altitude too high.
 
 ### [3] Derive the terminal artifact form
 
@@ -370,6 +375,29 @@ ideation: the decisions are settled, so do **not** re-open them or fan out again
 into the deliverable's conventional form (a story's prose, a lyric's verse/chorus, a spec's
 sections). Write the finished artifact to `docs/overthink/<goal-slug>-<form>.md`, beside the
 cascade state file, and present it in the user's language.
+
+**Completeness gate — run before declaring the artifact done.** Scan the synthesized artifact
+for any named-but-unspecified piece: placeholders (`...`, `TBD`), hand-waves ("computed
+somehow", "maps to a prompt"), or a component named in one layer but never given its
+data/algorithm/content/vocabulary. Each is an unresolved layer, not a finished one — do not
+present the artifact as complete while any remain.
+
+**Be honest about the boundary — never fake completeness.** A single cascade cannot fully
+implementation-spec a whole multi-part product without exhausting its budget and context; that
+is a structural limit, not something to paper over. When pieces remain that this run cannot
+resolve, end by stating the boundary plainly in two buckets:
+
+- **Needs its own pass** — under-specified components a *narrower* `--full` could finish (e.g.
+  "the tag taxonomy + the graph→prompt compiler"). List them as recommended follow-up scopes
+  instead of pretending they are done. This is normal: real specs go architecture doc →
+  per-component design docs, and the cascade composes the same way.
+- **Outside this tool** — pieces no amount of reasoning can settle because they need execution
+  and iteration (e.g. a prompt grammar validated against real renders) or external
+  standing/infrastructure (a legal/CSAM pipeline, a credentialed API). Name them as such.
+
+A spec that says "architecture complete; these three components each need their own pass, and
+this safety layer needs an external provider" is more useful — and more honest — than one that
+declares "buildable spec, done" while the hardest parts are still placeholders.
 
 ### Cost
 

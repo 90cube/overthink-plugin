@@ -1,6 +1,6 @@
 {
   "name": "overthink",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Directed sequential diversity ideation. Derives N problem-specific axes, then generates one idea per axis sequentially — each forced away from all prior ideas — and tags every idea trap/gem/solid so you can pick one from a genuinely varied spread. Includes a --deep recursive autonomous mode that drives one fixed goal down through every concretization layer (concept → stack → architecture → design → …) until it converges, and a --full mode that adds an upfront framing round and synthesizes the finished deliverable in whatever form the goal calls for (story, lyrics, typography, program spec, …).",
   "author": {
     "name": "dudgh",
